@@ -28,6 +28,8 @@ import Electron.Event (Event)
 data BrowserWindowOption
   = Width Int
   | Height Int
+  | MinWidth Int
+  | MinHeight Int
   | WebPreferences (Array WebPreference)
 
 type BrowserWindowOptions = Array BrowserWindowOption
