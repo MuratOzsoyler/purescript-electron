@@ -17,98 +17,118 @@ module Electron.BrowserWindow
   , onWillNavigate
   ) where
 
-import Prelude (Unit, (>>>))
-import Control.Monad.Eff (Eff)
-import Data.Argonaut.Core (Json())
-import Data.Generic (class Generic)
-import Electron (ELECTRON)
-import Electron.Options (encodeOptions)
+import Data.Argonaut.Core (Json)
+import Data.Generic.Rep (class Generic)
+import Data.Newtype (class Newtype)
+import Effect (Effect)
 import Electron.Event (Event)
+import Foreign (Foreign)
+import Foreign.Class (class Decode, class Encode, encode)
+import Foreign.Generic (defaultOptions, genericDecode, genericEncode)
+import Prelude (Unit, (>>>))
 
-data BrowserWindowOption
-  = Width Int
-  | Height Int
-  | MinWidth Int
-  | MinHeight Int
-  | WebPreferences (Array WebPreference)
+newtype BrowserWindowOption = BrowserWindowOption
+  { width          :: Int
+  , height         :: Int
+  , minWidth       :: Int
+  , minHeight      :: Int
+  , webPreferences :: Array WebPreference
+  }
+
+derive instance newtypeBrowserWindowOption :: Newtype BrowserWindowOption _
+derive instance genericBrowserWindowOption :: Generic BrowserWindowOption _
+instance decodeBrowserWindowOption :: Decode BrowserWindowOption where
+  decode = genericDecode defaultOptions{ unwrapSingleConstructors = true }
+instance encodeBrowserWindowOption :: Encode BrowserWindowOption where
+  encode = genericEncode defaultOptions{ unwrapSingleConstructors = true }
 
 type BrowserWindowOptions = Array BrowserWindowOption
 
-data WebPreference
-  = ZoomFactor Number
-  | AllowDisplayingInsecureContent Boolean
-  | AllowRunningInsecureContent Boolean
-  | OverlayScrollbars Boolean
+newtype WebPreference = WebPreference
+  { zoomFactor                     :: Number
+  , allowDisplayingInsecureContent :: Boolean
+  , allowRunningInsecureContent    :: Boolean
+  , overlayScrollbars              :: Boolean
+  }
 
-derive instance genericBrowserWindowOption :: Generic BrowserWindowOption
-
-derive instance genericWebPreference :: Generic WebPreference
+derive instance newtypeWebPreference :: Newtype WebPreference _
+derive instance genericWebPreference :: Generic WebPreference _
+instance decodeWebPreference :: Decode WebPreference where
+  decode = genericDecode defaultOptions{ unwrapSingleConstructors = true }
+instance encodeWebPreference :: Encode WebPreference where
+  encode = genericEncode defaultOptions{ unwrapSingleConstructors = true }
 
 foreign import data BrowserWindow :: Type
 
-newBrowserWindow :: forall eff
-   . BrowserWindowOptions
-  -> Eff (electron :: ELECTRON | eff) BrowserWindow
-newBrowserWindow = encodeOptions >>> newBrowserWindowImpl
+newBrowserWindow
+  :: BrowserWindowOptions
+  -> Effect BrowserWindow
+newBrowserWindow = encode >>> newBrowserWindowImpl
 
-foreign import newBrowserWindowImpl :: forall eff
-   . Json
-  -> Eff (electron :: ELECTRON | eff) BrowserWindow
+foreign import newBrowserWindowImpl
+  :: Foreign
+  -> Effect BrowserWindow
 
-foreign import loadURL :: forall eff
-   . BrowserWindow
+foreign import loadURL
+  :: BrowserWindow
   -> String
-  -> Eff (electron :: ELECTRON | eff) Unit
+  -> Effect Unit
 
-foreign import onClose :: forall eff
-   . BrowserWindow
-  -> Eff (electron :: ELECTRON | eff) Unit
-  -> Eff (electron :: ELECTRON | eff) Unit
+foreign import onClose
+  :: BrowserWindow
+  -> Effect Unit
+  -> Effect Unit
 
 foreign import data WebContents :: Type
 
-foreign import webContents :: forall eff
-   . BrowserWindow
-  -> Eff (electron :: ELECTRON | eff) WebContents
+foreign import webContents
+  :: BrowserWindow
+  -> Effect WebContents
 
 -- | Opens the devtools.
 -- |
 -- | [Official Electron documentation](http://electron.atom.io/docs/all/#webcontents-opendevtools-options)
-openDevTools :: forall eff
-   . WebContents
+openDevTools
+  :: WebContents
   -> DevToolOptions
-  -> Eff (electron :: ELECTRON | eff) Unit
-openDevTools wc = encodeOptions >>> openDevToolsImpl wc
+  -> Effect Unit
+openDevTools wc = encode >>> openDevToolsImpl wc
 
-foreign import openDevToolsImpl :: forall eff
-   . WebContents
-  -> Json
-  -> Eff (electron :: ELECTRON | eff) Unit
+foreign import openDevToolsImpl
+  :: WebContents
+  -> Foreign
+  -> Effect Unit
 
-data DevToolOption
-  = Detach Boolean
+newtype DevToolOption = DevToolOption
+  { detach :: Boolean
+  }
+
+derive instance newtypeDevToolOption :: Newtype DevToolOption _
+derive instance genericDevToolOption :: Generic DevToolOption _
+instance decodeDevToolOption :: Decode DevToolOption where
+  decode = genericDecode defaultOptions{ unwrapSingleConstructors = true }
+instance encodeDevToolOption :: Encode DevToolOption where
+  encode = genericEncode defaultOptions{ unwrapSingleConstructors = true }
 
 type DevToolOptions = Array DevToolOption
 
-derive instance genericDevToolOption :: Generic DevToolOption
-
-foreign import send :: forall a eff
+foreign import send :: forall a
    . WebContents
   -> String
   -> a
-  -> Eff (electron :: ELECTRON | eff) Unit
+  -> Effect Unit
 
-foreign import onDidFinishLoad :: forall eff
-   . WebContents
-  -> Eff (electron :: ELECTRON | eff) Unit
-  -> Eff (electron :: ELECTRON | eff) Unit
+foreign import onDidFinishLoad
+  :: WebContents
+  -> Effect Unit
+  -> Effect Unit
 
-foreign import onNewWindow :: forall eff
-   . WebContents
-  -> (Event -> String -> Eff (electron :: ELECTRON | eff) Unit)
-  -> Eff (electron :: ELECTRON | eff) Unit
+foreign import onNewWindow
+  :: WebContents
+  -> (Event -> String -> Effect Unit)
+  -> Effect Unit
 
-foreign import onWillNavigate :: forall eff
-   . WebContents
-  -> (Event -> String -> Eff (electron :: ELECTRON | eff) Unit)
-  -> Eff (electron :: ELECTRON | eff) Unit
+foreign import onWillNavigate
+  :: WebContents
+  -> (Event -> String -> Effect Unit)
+  -> Effect Unit

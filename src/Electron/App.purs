@@ -7,15 +7,14 @@ module Electron.App
   , quit
   ) where
 
+import Effect (Effect)
 import Prelude (Unit)
-import Control.Monad.Eff (Eff)
-import Electron (ELECTRON)
 
-foreign import getAppPath :: forall eff. Eff (electron :: ELECTRON | eff) String
+foreign import getAppPath :: Effect String
 
-foreign import getPath :: forall eff. Path -> Eff (electron :: ELECTRON | eff) String
+foreign import getPath :: Path -> Effect String
 
-foreign import quit :: forall eff. Eff (electron :: ELECTRON | eff) Unit
+foreign import quit :: Effect Unit
 
 data Path
   = Home
@@ -25,10 +24,10 @@ data Path
 -- | Emitted when Electron has finished initialization.
 -- |
 -- | [Official Electron documentation](http://electron.atom.io/docs/all/#event-39-ready-39)
-foreign import onReady :: forall eff
-   . Eff (electron :: ELECTRON | eff) Unit
-  -> Eff (electron :: ELECTRON | eff) Unit
+foreign import onReady
+  :: Effect Unit
+  -> Effect Unit
 
-foreign import onAllWindowsClosed :: forall eff
-   . Eff (electron :: ELECTRON | eff) Unit
-  -> Eff (electron :: ELECTRON | eff) Unit
+foreign import onAllWindowsClosed
+  :: Effect Unit
+  -> Effect Unit
