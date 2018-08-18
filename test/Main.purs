@@ -4,8 +4,6 @@ import Control.Monad.Aff.AVar (AVAR)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE)
 import Control.Monad.Eff.Timer (TIMER)
-import Data.Argonaut.Core (jsonEmptyObject)
-import Data.Argonaut.Encode.Combinators ((~>), (:=))
 import Electron.BrowserWindow (BrowserWindowOption(..), WebPreference(..))
 import Electron.Options (encodeOptions)
 import Node.Process (PROCESS)
@@ -27,8 +25,4 @@ main = run [consoleReporter] do
                         }
                       }
                     ]
-      encodeOptions options `shouldEqual` (  "width"  := 640
-                                          ~> "height" := 480
-                                          ~> "webPreferences" := ( "overlayScrollbars" := true
-                                                                 ~> jsonEmptyObject )
-                                          ~> jsonEmptyObject )
+      encodeOptions options `shouldEqual` _ -- TODO

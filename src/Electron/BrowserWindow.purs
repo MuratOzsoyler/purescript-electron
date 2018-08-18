@@ -17,7 +17,6 @@ module Electron.BrowserWindow
   , onWillNavigate
   ) where
 
-import Data.Argonaut.Core (Json)
 import Data.Generic.Rep (class Generic)
 import Data.Newtype (class Newtype)
 import Effect (Effect)
