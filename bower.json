@@ -21,12 +21,12 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-foreign-generic": "^7.0.0",
-    "purescript-generics-rep": "^6.0.0"
+    "purescript-foreign-generic": "^8.0.0",
+    "purescript-generics-rep": "^6.1.0"
   },
   "devDependencies": {
-    "purescript-console": "^4.1.0",
-    "purescript-spec": "^3.0.0"
+    "purescript-console": "^4.2.0",
+    "purescript-spec": "^3.1.0"
   },
   "version": "0.3.0"
 }
