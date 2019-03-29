@@ -31,6 +31,7 @@ newtype BrowserWindowOption = BrowserWindowOption
   , height         :: Int
   , minWidth       :: Int
   , minHeight      :: Int
+  , useContentSize :: Boolean
   , webPreferences :: Array WebPreference
   }
 
